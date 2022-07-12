@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -174,7 +174,27 @@
                     <div class="row mt-2">
                         <div class="col d-flex justify-content-between">
                             <button type="button" class="btn btn-warning" @click="etapa -= 1">Voltar para o lanche</button>
-                            <button type="button" class="btn btn-success">Confirmar</button>
+                            <button type="button" class="btn btn-success" @click="confirmarPedido()">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" v-if="etapa == 3">
+                    <div class="row mt-2">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                   Pedido Confirmado
+                                </div>
+                                <div class="card-body">
+                                  <p>Agora é só aguardar 10 minutinhos</p>  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col d-flex justify-content-between">
+                            <button type="button" class="btn btn-primary" @click="etapa = 1">Repetir pedido</button>
+                            <button type="button" class="btn btn-success" @click="novoPedido()">Novo pedido </button>
                         </div>
                     </div>
                 </div>
@@ -186,16 +206,17 @@
     <script>
         const vm = new Vue({
             el: '#app',
-            data() {
-                return {
+            data: {
+                
                     inputTipoPao: '',
                     inputSalada: [],
                     inputMolhos: [],
                     inputHamburguer: '',
                     etapa: 1,
                     inputNome: '',
-                    inputEndereco: ''
-                }
+                    inputEndereco: '',
+                    novoPedidoAsync: null
+               
             },
             computed: {
                 pao(){
@@ -221,6 +242,7 @@
                     }
                     return "imagens/padrao/molho.png"
                 },
+               
                 maionese(){
                     if(this.inputMolhos.includes('maionese')){
                         return 'imagens/maionese.png'
@@ -246,6 +268,14 @@
 
                     }
                     
+                },
+              
+            },
+            watch:{
+                etapa(novoValor){
+                    if(novoValor == 1){
+                        clearTimeout(this.novoPedidoAsync)
+                    }
                 }
             },
             methods: {
@@ -255,7 +285,26 @@
                     }else{
                         alert('Você precisa selecionar no mínimo um pão e um hambúrguer')
                     }
-                }
+                },
+                confirmarPedido(){
+                    if(this.inputNome && this.inputHamburguer){
+                        this.etapa = 3
+
+                        this.novoPedidoAsync = setTimeout(() => this.novoPedido(), 7000)
+                    }else{
+                        alert('Você precisa informar nome e endereço')
+                    }
+
+                },
+                novoPedido(){
+                    this.inputTipoPao ='',
+                    this.inputSalada= [],
+                    this.inputMolhos= [],
+                    this.inputHamburguer= '',
+                    this.etapa= 1,
+                    this.inputNome= '',
+                    this.inputEndereco= ''
+                },
             },
            
         })
